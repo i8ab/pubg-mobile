@@ -823,18 +823,32 @@
     // باقات افتراضية (تتسجل أول مرة لو السيرفر فاضي)
     // ============================================================
     const DEFAULT_PRODUCTS = [
-      { id: "p60", type: "pubg", amount: 60, bonusAmount: 0, label: "60 UC", bonus: "", price: 65, oldPrice: 70, visible: true, order: 1 },
-      { id: "p350", type: "pubg", amount: 350, bonusAmount: 25, label: "350 UC", bonus: "300 + 25 بونص", price: 325, oldPrice: 350, visible: true, order: 2 },
-      { id: "p720", type: "pubg", amount: 720, bonusAmount: 60, label: "720 UC", bonus: "660 + 60 بونص", price: 650, oldPrice: 700, visible: true, featured: true, order: 3 },
-      { id: "p2100", type: "pubg", amount: 2100, bonusAmount: 300, label: "2100 UC", bonus: "1800 + 300 بونص", price: 1620, oldPrice: 1750, visible: true, featured: true, order: 4 },
-      { id: "p3850", type: "pubg", amount: 3850, bonusAmount: 850, label: "3850 UC", bonus: "3000 + 850 بونص", price: 3250, oldPrice: 3500, visible: true, order: 5 },
-      { id: "p8100", type: "pubg", amount: 8100, bonusAmount: 2100, label: "8100 UC", bonus: "6000 + 2100 بونص", price: 6450, oldPrice: 7000, visible: true, order: 6 },
-      { id: "t70", type: "tiktok", amount: 70, bonusAmount: 0, label: "70 عملة", bonus: "", price: 55, oldPrice: 60, visible: true, order: 10 },
-      { id: "t350", type: "tiktok", amount: 350, bonusAmount: 0, label: "350 عملة", bonus: "", price: 260, oldPrice: 280, visible: true, order: 11 },
-      { id: "t700", type: "tiktok", amount: 700, bonusAmount: 0, label: "700 عملة", bonus: "", price: 510, oldPrice: 550, visible: true, featured: true, order: 12 },
-      { id: "t1400", type: "tiktok", amount: 1400, bonusAmount: 0, label: "1,400 عملة", bonus: "", price: 990, oldPrice: 1100, visible: true, order: 13 },
-      { id: "t3500", type: "tiktok", amount: 3500, bonusAmount: 0, label: "3,500 عملة", bonus: "", price: 2450, oldPrice: 2700, visible: true, order: 14 },
-      { id: "t7000", type: "tiktok", amount: 7000, bonusAmount: 0, label: "7,000 عملة", bonus: "", price: 4800, oldPrice: 5200, visible: true, order: 15 },
+      // ===== حزم خاصة (شراء أول + رويال باس) — من table.csv =====
+      { id: "first_purchase", type: "pubg", amount: 90, bonusAmount: 0, label: "حزمة الشراء الأول", bonus: "90 UC + 100 AG · مرة واحدة لكل حساب", price: 45, oldPrice: 55, visible: true, featured: true, order: 0 },
+      { id: "elite_50", type: "pubg", amount: 50, bonusAmount: 0, label: "Elite Pass (1-50)", bonus: "رويال باس نصفي LV1-50", price: 240, oldPrice: 270, visible: true, featured: true, order: 0.1 },
+      { id: "elite_100", type: "pubg", amount: 100, bonusAmount: 0, label: "Elite Pass (1-100)", bonus: "رويال باس كامل LV1-100", price: 480, oldPrice: 540, visible: true, featured: true, order: 0.2 },
+      { id: "elite_plus", type: "pubg", amount: 100, bonusAmount: 0, label: "Elite Pass Plus (1-100)", bonus: "رويال باس بلس LV1-100", price: 1200, oldPrice: 1350, visible: true, featured: true, order: 0.3 },
+      // ===== شدات ببجي (مطابقة لحزم Midasbuy الرسمية) =====
+      { id: "p30", type: "pubg", amount: 30, bonusAmount: 0, label: "30 UC", bonus: "", price: 35, oldPrice: 40, visible: true, order: 1 },
+      { id: "p60", type: "pubg", amount: 60, bonusAmount: 0, label: "60 UC", bonus: "", price: 65, oldPrice: 70, visible: true, order: 2 },
+      { id: "p325", type: "pubg", amount: 325, bonusAmount: 25, label: "325 UC", bonus: "300 + 25 بونص", price: 310, oldPrice: 340, visible: true, order: 3 },
+      { id: "p660", type: "pubg", amount: 660, bonusAmount: 60, label: "660 UC", bonus: "600 + 60 بونص", price: 620, oldPrice: 680, visible: true, featured: true, order: 4 },
+      { id: "p1800", type: "pubg", amount: 1800, bonusAmount: 300, label: "1800 UC", bonus: "1500 + 300 بونص", price: 1550, oldPrice: 1700, visible: true, featured: true, order: 5 },
+      { id: "p3850", type: "pubg", amount: 3850, bonusAmount: 850, label: "3850 UC", bonus: "3000 + 850 بونص", price: 3250, oldPrice: 3500, visible: true, order: 6 },
+      { id: "p8100", type: "pubg", amount: 8100, bonusAmount: 2100, label: "8100 UC", bonus: "6000 + 2100 بونص", price: 6450, oldPrice: 7000, visible: true, order: 7 },
+      { id: "p16200", type: "pubg", amount: 16200, bonusAmount: 4200, label: "16200 UC", bonus: "12000 + 4200 بونص", price: 12800, oldPrice: 14000, visible: true, featured: true, order: 8 },
+      { id: "p24300", type: "pubg", amount: 24300, bonusAmount: 6300, label: "24300 UC", bonus: "18000 + 6300 بونص", price: 19000, oldPrice: 21000, visible: true, order: 9 },
+      { id: "p32400", type: "pubg", amount: 32400, bonusAmount: 8400, label: "32400 UC", bonus: "24000 + 8400 بونص", price: 25200, oldPrice: 28000, visible: true, order: 10 },
+      { id: "p40500", type: "pubg", amount: 40500, bonusAmount: 10500, label: "40500 UC", bonus: "30000 + 10500 بونص", price: 31500, oldPrice: 35000, visible: true, order: 11 },
+      { id: "p48600", type: "pubg", amount: 48600, bonusAmount: 12600, label: "48600 UC", bonus: "36000 + 12600 بونص", price: 37800, oldPrice: 42000, visible: true, order: 12 },
+      { id: "p81000", type: "pubg", amount: 81000, bonusAmount: 21000, label: "81000 UC", bonus: "60000 + 21000 بونص", price: 63000, oldPrice: 70000, visible: true, order: 13 },
+      // ===== عملات تيك توك =====
+      { id: "t70", type: "tiktok", amount: 70, bonusAmount: 0, label: "70 عملة", bonus: "", price: 55, oldPrice: 60, visible: true, order: 20 },
+      { id: "t350", type: "tiktok", amount: 350, bonusAmount: 0, label: "350 عملة", bonus: "", price: 260, oldPrice: 280, visible: true, order: 21 },
+      { id: "t700", type: "tiktok", amount: 700, bonusAmount: 0, label: "700 عملة", bonus: "", price: 510, oldPrice: 550, visible: true, featured: true, order: 22 },
+      { id: "t1400", type: "tiktok", amount: 1400, bonusAmount: 0, label: "1,400 عملة", bonus: "", price: 990, oldPrice: 1100, visible: true, order: 23 },
+      { id: "t3500", type: "tiktok", amount: 3500, bonusAmount: 0, label: "3,500 عملة", bonus: "", price: 2450, oldPrice: 2700, visible: true, order: 24 },
+      { id: "t7000", type: "tiktok", amount: 7000, bonusAmount: 0, label: "7,000 عملة", bonus: "", price: 4800, oldPrice: 5200, visible: true, order: 25 },
     ];
 
     let products = [];
