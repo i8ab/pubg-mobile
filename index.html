@@ -26,6 +26,8 @@
       --tiktok-glow: rgba(254, 44, 85, 0.4);
       --pass: #f59e0b;
       --pass-glow: rgba(245, 158, 11, 0.4);
+      --growth: #a855f7;
+      --growth-glow: rgba(168, 85, 247, 0.4);
       --success: #22c55e;
       --danger: #ef4444;
       --radius: 16px;
@@ -165,6 +167,12 @@
       box-shadow: 0 4px 20px var(--pass-glow);
     }
 
+    .btn-growth {
+      background: linear-gradient(135deg, var(--growth), #c084fc);
+      color: #fff;
+      box-shadow: 0 4px 20px var(--growth-glow);
+    }
+
     .btn-admin {
       background: var(--bg-elevated);
       color: var(--text-muted);
@@ -292,6 +300,13 @@
       box-shadow: 0 0 20px var(--pass-glow);
     }
 
+    .tab.active-growth {
+      background: rgba(168, 85, 247, 0.15);
+      border-color: var(--growth);
+      color: var(--growth);
+      box-shadow: 0 0 20px var(--growth-glow);
+    }
+
     .section-title {
       font-size: 1.35rem;
       font-weight: 800;
@@ -344,6 +359,7 @@
     .card.pubg { --accent: var(--pubg); }
     .card.tiktok { --accent: var(--tiktok); }
     .card.pass { --accent: var(--pass); }
+    .card.growth { --accent: var(--growth); }
 
     .card-badge {
       position: absolute;
@@ -365,6 +381,11 @@
     .card.pass .card-badge:not(.featured-badge) {
       background: rgba(245, 158, 11, 0.2);
       color: var(--pass);
+    }
+
+    .card.growth .card-badge:not(.featured-badge) {
+      background: rgba(168, 85, 247, 0.2);
+      color: var(--growth);
     }
 
     .card-badge.featured-badge {
@@ -751,7 +772,8 @@
       <!-- Tabs -->
       <div class="tabs">
         <button class="tab active-pubg" data-tab="pubg" type="button">🪖 شدات ببجي</button>
-        <button class="tab" data-tab="pass" type="button">👑 رويال باس / حزم الإصدار</button>
+        <button class="tab" data-tab="pass" type="button">👑 رويال باس</button>
+        <button class="tab" data-tab="growth" type="button">💎 حزم الازدهار</button>
         <button class="tab" data-tab="tiktok" type="button">🎵 عملات تيك توك</button>
       </div>
 
@@ -763,8 +785,13 @@
       </section>
 
       <section id="passSection" class="hidden">
-        <h2 class="section-title">حزم الإصدار · رويال باس · شراء أول</h2>
+        <h2 class="section-title">رويال باس · Elite Pass</h2>
         <div class="products" id="passProducts"></div>
+      </section>
+
+      <section id="growthSection" class="hidden">
+        <h2 class="section-title">حزم الازدهار · مواد · جواهر</h2>
+        <div class="products" id="growthProducts"></div>
       </section>
 
       <section id="tiktokSection" class="hidden">
@@ -850,11 +877,14 @@
     // باقات افتراضية (تتسجل أول مرة لو السيرفر فاضي)
     // ============================================================
     const DEFAULT_PRODUCTS = [
-      // ===== حزم الإصدار / رويال باس / شراء أول — قسم مستقل =====
-      { id: "first_purchase", type: "pass", amount: 90, bonusAmount: 0, label: "حزمة الشراء الأول", bonus: "90 UC + 100 AG · مرة واحدة لكل حساب", price: 45, oldPrice: 55, visible: true, featured: true, order: 0 },
-      { id: "elite_50", type: "pass", amount: 50, bonusAmount: 0, label: "Elite Pass (1-50)", bonus: "رويال باس نصفي LV1-50", price: 240, oldPrice: 270, visible: true, featured: true, order: 0.1 },
-      { id: "elite_100", type: "pass", amount: 100, bonusAmount: 0, label: "Elite Pass (1-100)", bonus: "رويال باس كامل LV1-100", price: 480, oldPrice: 540, visible: true, featured: true, order: 0.2 },
-      { id: "elite_plus", type: "pass", amount: 100, bonusAmount: 0, label: "Elite Pass Plus (1-100)", bonus: "رويال باس بلس LV1-100", price: 1200, oldPrice: 1350, visible: true, featured: true, order: 0.3 },
+      // ===== رويال باس (Elite Pass) =====
+      { id: "elite_50", type: "pass", amount: 50, bonusAmount: 0, label: "Elite Pass (1-50)", bonus: "رويال باس نصفي LV1-50", price: 240, oldPrice: 270, visible: true, featured: true, order: 30 },
+      { id: "elite_100", type: "pass", amount: 100, bonusAmount: 0, label: "Elite Pass (1-100)", bonus: "رويال باس كامل LV1-100", price: 480, oldPrice: 540, visible: true, featured: true, order: 31 },
+      { id: "elite_plus", type: "pass", amount: 100, bonusAmount: 0, label: "Elite Pass Plus (1-100)", bonus: "رويال باس بلس LV1-100", price: 1200, oldPrice: 1350, visible: true, featured: true, order: 32 },
+      // ===== حزم الازدهار (Growth Packs) — شراء أول + مواد + شعار خرافي =====
+      { id: "first_purchase", type: "growth", amount: 90, bonusAmount: 0, label: "حزمة الشراء الأول", bonus: "90 UC + 100 AG · مرة واحدة لكل حساب", price: 45, oldPrice: 55, visible: true, featured: true, order: 40 },
+      { id: "materials_pack", type: "growth", amount: 100, bonusAmount: 0, label: "حزمة مواد ترقية الأسلحة", bonus: "100 UC + مواد تعديل · مرة واحدة لكل حساب", price: 135, oldPrice: 155, visible: true, featured: true, order: 41 },
+      { id: "mythic_emblem", type: "growth", amount: 300, bonusAmount: 0, label: "حزمة الشعار الخرافي", bonus: "300 UC + 15 جزء شعار خرافي · مرة واحدة لكل حساب", price: 220, oldPrice: 250, visible: true, featured: true, order: 42 },
       // ===== شدات ببجي (مطابقة لحزم Midasbuy الرسمية) =====
       { id: "p30", type: "pubg", amount: 30, bonusAmount: 0, label: "30 UC", bonus: "", price: 35, oldPrice: 40, visible: true, order: 1 },
       { id: "p60", type: "pubg", amount: 60, bonusAmount: 0, label: "60 UC", bonus: "", price: 65, oldPrice: 70, visible: true, order: 2 },
@@ -999,9 +1029,11 @@
     function renderProducts() {
       const pubgEl = document.getElementById("pubgProducts");
       const passEl = document.getElementById("passProducts");
+      const growthEl = document.getElementById("growthProducts");
       const tiktokEl = document.getElementById("tiktokProducts");
       pubgEl.innerHTML = "";
       passEl.innerHTML = "";
+      growthEl.innerHTML = "";
       tiktokEl.innerHTML = "";
 
       const list = visibleProducts().sort((a, b) => {
@@ -1016,7 +1048,8 @@
 
       const typeMeta = {
         pubg: { small: "شدة", btn: "btn-primary", el: pubgEl },
-        pass: { small: "إصدار", btn: "btn-pass", el: passEl },
+        pass: { small: "رويال باس", btn: "btn-pass", el: passEl },
+        growth: { small: "ازدهار", btn: "btn-growth", el: growthEl },
         tiktok: { small: "تيك توك", btn: "btn-tiktok", el: tiktokEl },
       };
 
@@ -1085,14 +1118,16 @@
       tab.addEventListener("click", () => {
         currentTab = tab.dataset.tab;
         document.querySelectorAll(".tab").forEach((t) => {
-          t.classList.remove("active-pubg", "active-tiktok", "active-pass");
+          t.classList.remove("active-pubg", "active-tiktok", "active-pass", "active-growth");
         });
         const activeClass =
           currentTab === "pubg" ? "active-pubg" :
-          currentTab === "pass" ? "active-pass" : "active-tiktok";
+          currentTab === "pass" ? "active-pass" :
+          currentTab === "growth" ? "active-growth" : "active-tiktok";
         tab.classList.add(activeClass);
         document.getElementById("pubgSection").classList.toggle("hidden", currentTab !== "pubg");
         document.getElementById("passSection").classList.toggle("hidden", currentTab !== "pass");
+        document.getElementById("growthSection").classList.toggle("hidden", currentTab !== "growth");
         document.getElementById("tiktokSection").classList.toggle("hidden", currentTab !== "tiktok");
         updateOrderSelect();
       });
@@ -1124,10 +1159,11 @@
 
       const typeLabel =
         p.type === "pubg" ? "شدات ببجي" :
-        p.type === "pass" ? "رويال باس / حزم الإصدار" :
+        p.type === "pass" ? "رويال باس" :
+        p.type === "growth" ? "حزم الازدهار" :
         "عملات تيك توك";
       const bonusLine = p.bonus || (p.bonusAmount ? `بونص: ${p.bonusAmount}` : null);
-      const qtyLine = p.type === "pass"
+      const qtyLine = (p.type === "pass" || p.type === "growth")
         ? null
         : `الكمية: ${p.amount}${p.bonusAmount ? ` (+${p.bonusAmount} بونص)` : ""}`;
       const msg = [
@@ -1186,7 +1222,8 @@
 
     function buildLabel(type, amount) {
       if (type === "tiktok") return `${Number(amount).toLocaleString("en-US")} عملة`;
-      if (type === "pass") return `حزمة إصدار ${Number(amount).toLocaleString("en-US")}`;
+      if (type === "pass") return `رويال باس LV ${Number(amount).toLocaleString("en-US")}`;
+      if (type === "growth") return `حزمة ازدهار ${Number(amount).toLocaleString("en-US")}`;
       return `${Number(amount).toLocaleString("en-US")} UC`;
     }
 
@@ -1212,6 +1249,7 @@
             <select class="type-input">
               <option value="pubg" ${p.type === "pubg" ? "selected" : ""}>ببجي</option>
               <option value="pass" ${p.type === "pass" ? "selected" : ""}>رويال باس</option>
+              <option value="growth" ${p.type === "growth" ? "selected" : ""}>حزم الازدهار</option>
               <option value="tiktok" ${p.type === "tiktok" ? "selected" : ""}>تيك توك</option>
             </select>
           </td>
@@ -1302,8 +1340,9 @@
       const newId = "p" + Date.now();
       const type =
         currentTab === "tiktok" ? "tiktok" :
-        currentTab === "pass" ? "pass" : "pubg";
-      const amount = type === "pass" ? 50 : 100;
+        currentTab === "pass" ? "pass" :
+        currentTab === "growth" ? "growth" : "pubg";
+      const amount = (type === "pass" || type === "growth") ? 50 : 100;
       products.push({
         id: newId,
         type,
