@@ -8,6 +8,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Orbitron:wght@600;700&display=swap" rel="stylesheet" />
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
   <style>
     :root {
       --bg-deep: #070b14;
@@ -27,15 +30,9 @@
       --shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html {
-      scroll-behavior: smooth;
-    }
+    html { scroll-behavior: smooth; }
 
     body {
       font-family: "Cairo", system-ui, sans-serif;
@@ -46,7 +43,6 @@
       overflow-x: hidden;
     }
 
-    /* Ambient background */
     body::before {
       content: "";
       position: fixed;
@@ -66,7 +62,6 @@
       z-index: 1;
     }
 
-    /* Header */
     header {
       position: sticky;
       top: 0;
@@ -111,9 +106,7 @@
       letter-spacing: -0.02em;
     }
 
-    .logo-text span {
-      color: var(--pubg);
-    }
+    .logo-text span { color: var(--pubg); }
 
     .nav-actions {
       display: flex;
@@ -137,9 +130,7 @@
       text-decoration: none;
     }
 
-    .btn:active {
-      transform: scale(0.97);
-    }
+    .btn:active { transform: scale(0.97); }
 
     .btn-ghost {
       background: transparent;
@@ -158,9 +149,7 @@
       box-shadow: 0 4px 20px var(--pubg-glow);
     }
 
-    .btn-primary:hover {
-      box-shadow: 0 6px 28px var(--pubg-glow);
-    }
+    .btn-primary:hover { box-shadow: 0 6px 28px var(--pubg-glow); }
 
     .btn-tiktok {
       background: linear-gradient(135deg, var(--tiktok), #ff4d6d);
@@ -181,7 +170,12 @@
       border-color: var(--success);
     }
 
-    /* Hero */
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
     .hero {
       padding: 3.5rem 0 2.5rem;
       text-align: center;
@@ -220,7 +214,7 @@
       color: var(--text-muted);
       font-size: 1.1rem;
       max-width: 540px;
-      margin-inline: auto 1.75rem;
+      margin-inline: auto;
       margin-bottom: 1.75rem;
     }
 
@@ -232,9 +226,7 @@
       margin-top: 2rem;
     }
 
-    .stat {
-      text-align: center;
-    }
+    .stat { text-align: center; }
 
     .stat-value {
       font-family: "Orbitron", sans-serif;
@@ -248,7 +240,6 @@
       color: var(--text-muted);
     }
 
-    /* Tabs */
     .tabs {
       display: flex;
       gap: 0.5rem;
@@ -270,9 +261,7 @@
       transition: all 0.2s ease;
     }
 
-    .tab:hover {
-      color: var(--text);
-    }
+    .tab:hover { color: var(--text); }
 
     .tab.active-pubg {
       background: rgba(255, 122, 24, 0.15);
@@ -288,7 +277,6 @@
       box-shadow: 0 0 20px var(--tiktok-glow);
     }
 
-    /* Products grid */
     .section-title {
       font-size: 1.35rem;
       font-weight: 800;
@@ -336,17 +324,10 @@
       box-shadow: var(--shadow);
     }
 
-    .card:hover::before {
-      opacity: 1;
-    }
+    .card:hover::before { opacity: 1; }
 
-    .card.pubg {
-      --accent: var(--pubg);
-    }
-
-    .card.tiktok {
-      --accent: var(--tiktok);
-    }
+    .card.pubg { --accent: var(--pubg); }
+    .card.tiktok { --accent: var(--tiktok); }
 
     .card-badge {
       position: absolute;
@@ -416,7 +397,6 @@
       font-size: 0.9rem;
     }
 
-    /* Order panel */
     .order-panel {
       background: var(--bg-card);
       border: 1px solid var(--border);
@@ -441,9 +421,7 @@
     }
 
     @media (max-width: 640px) {
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
+      .form-grid { grid-template-columns: 1fr; }
     }
 
     .field {
@@ -493,11 +471,9 @@
       font-weight: 800;
     }
 
-    .order-total span {
-      color: var(--pubg);
-    }
+    .order-total span { color: var(--pubg); }
 
-    /* Admin panel */
+    /* Admin */
     .admin-panel {
       display: none;
       background: var(--bg-card);
@@ -507,53 +483,87 @@
       margin-bottom: 2.5rem;
     }
 
-    .admin-panel.visible {
-      display: block;
-    }
+    .admin-panel.visible { display: block; }
 
     .admin-panel h2 {
       color: var(--success);
       font-size: 1.15rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .admin-hint {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+    }
+
+    .admin-status {
+      font-size: 0.8rem;
+      margin-bottom: 1rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: 8px;
+      display: inline-block;
+    }
+
+    .admin-status.online {
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--success);
+    }
+
+    .admin-status.offline {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+    }
+
+    .admin-table-wrap {
+      overflow-x: auto;
       margin-bottom: 1rem;
     }
 
     .admin-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
+      min-width: 720px;
     }
 
     .admin-table th,
     .admin-table td {
-      padding: 0.6rem 0.5rem;
+      padding: 0.5rem 0.4rem;
       text-align: right;
       border-bottom: 1px solid var(--border);
+      vertical-align: middle;
     }
 
     .admin-table th {
       color: var(--text-muted);
       font-weight: 600;
+      white-space: nowrap;
     }
 
-    .admin-table input {
-      width: 100px;
+    .admin-table input,
+    .admin-table select {
+      width: 100%;
+      min-width: 70px;
       background: var(--bg-elevated);
       border: 1px solid var(--border);
       border-radius: 6px;
-      padding: 0.4rem 0.5rem;
+      padding: 0.4rem 0.45rem;
       color: var(--text);
       font-family: inherit;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
     }
+
+    .admin-table input.w-sm { max-width: 80px; }
+    .admin-table input.w-md { max-width: 110px; }
 
     .admin-actions {
       display: flex;
       gap: 0.75rem;
-      margin-top: 1.25rem;
+      margin-top: 0.5rem;
       flex-wrap: wrap;
     }
 
-    /* Footer */
     footer {
       border-top: 1px solid var(--border);
       padding: 2rem 0;
@@ -562,12 +572,6 @@
       font-size: 0.9rem;
     }
 
-    footer a {
-      color: var(--pubg);
-      text-decoration: none;
-    }
-
-    /* Modal */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -580,9 +584,7 @@
       padding: 1rem;
     }
 
-    .modal-overlay.open {
-      display: flex;
-    }
+    .modal-overlay.open { display: flex; }
 
     .modal {
       background: var(--bg-card);
@@ -593,10 +595,7 @@
       box-shadow: var(--shadow);
     }
 
-    .modal h3 {
-      margin-bottom: 1rem;
-      font-size: 1.15rem;
-    }
+    .modal h3 { margin-bottom: 1rem; font-size: 1.15rem; }
 
     .modal p {
       color: var(--text-muted);
@@ -610,7 +609,6 @@
       justify-content: flex-end;
     }
 
-    /* Toast */
     .toast {
       position: fixed;
       bottom: 1.5rem;
@@ -625,21 +623,24 @@
       z-index: 200;
       transition: transform 0.3s ease;
       box-shadow: var(--shadow);
+      max-width: 90%;
+      text-align: center;
     }
 
-    .toast.show {
-      transform: translateX(-50%) translateY(0);
-    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
 
-    .hidden {
-      display: none !important;
+    .toast.error { border-color: var(--danger); }
+
+    .hidden { display: none !important; }
+
+    .loading-products {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-muted);
     }
 
     @media (prefers-reduced-motion: reduce) {
-      * {
-        transition: none !important;
-        animation: none !important;
-      }
+      * { transition: none !important; animation: none !important; }
     }
   </style>
 </head>
@@ -661,7 +662,7 @@
     <section class="hero container">
       <div class="hero-badge">⚡ تسليم فوري · أسعار تنافسية</div>
       <h1>شدات ببجي و<span class="highlight">عملات تيك توك</span></h1>
-      <p>اشحن حسابك بأمان وسرعة. اختر الباقة، اكتب الآيدي، واستلم خلال دقائق. الأسعار قابلة للتعديل من لوحة التحكم.</p>
+      <p>اشحن حسابك بأمان وسرعة من Saif Store. اختر الباقة، اكتب الآيدي، واستلم خلال دقائق.</p>
       <div class="hero-stats">
         <div class="stat">
           <div class="stat-value">+12k</div>
@@ -681,24 +682,32 @@
     <div class="container">
       <!-- Admin Panel -->
       <section class="admin-panel" id="adminPanel">
-        <h2>🔧 لوحة التحكم في الأسعار</h2>
-        <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">عدّل السعر اللي يظهر للعميل. التغييرات تتحفظ تلقائيًا في المتصفح (localStorage).</p>
-        <div style="overflow-x: auto;">
+        <h2>🔧 لوحة التحكم — Saif Store</h2>
+        <p class="admin-hint">عدّل الكمية، البونص، الاسم، والسعر. التغييرات تتحفظ على السيرفر وتظهر لكل الزوار فورًا.</p>
+        <div id="adminStatus" class="admin-status offline">⏳ جاري الاتصال بـ Firebase...</div>
+
+        <div class="admin-table-wrap">
           <table class="admin-table" id="adminTable">
             <thead>
               <tr>
-                <th>المنتج</th>
+                <th>النوع</th>
                 <th>الكمية</th>
+                <th>البونص</th>
+                <th>الاسم الظاهر</th>
                 <th>السعر (ج.م)</th>
-                <th>السعر القديم (اختياري)</th>
+                <th>سعر قديم</th>
+                <th>إظهار</th>
+                <th></th>
               </tr>
             </thead>
             <tbody></tbody>
           </table>
         </div>
+
         <div class="admin-actions">
-          <button class="btn btn-primary" id="savePrices" type="button">حفظ الأسعار</button>
-          <button class="btn btn-ghost" id="resetPrices" type="button">استعادة الافتراضي</button>
+          <button class="btn btn-primary" id="savePrices" type="button">💾 حفظ على السيرفر</button>
+          <button class="btn btn-ghost" id="addProduct" type="button">+ باقة جديدة</button>
+          <button class="btn btn-ghost" id="seedDefaults" type="button">تحميل الباقات الافتراضية</button>
           <button class="btn btn-ghost" id="closeAdmin" type="button">إغلاق</button>
         </div>
       </section>
@@ -709,19 +718,18 @@
         <button class="tab" data-tab="tiktok" type="button">🎵 عملات تيك توك</button>
       </div>
 
-      <!-- PUBG Products -->
       <section id="pubgSection">
         <h2 class="section-title">باقات شدات ببجي موبايل (UC)</h2>
-        <div class="products" id="pubgProducts"></div>
+        <div class="products" id="pubgProducts">
+          <div class="loading-products">جاري تحميل الباقات...</div>
+        </div>
       </section>
 
-      <!-- TikTok Products -->
       <section id="tiktokSection" class="hidden">
         <h2 class="section-title">باقات عملات التيك توك</h2>
         <div class="products" id="tiktokProducts"></div>
       </section>
 
-      <!-- Order Form -->
       <section class="order-panel" id="order">
         <h2>🛒 إتمام الطلب</h2>
         <div class="form-grid">
@@ -760,11 +768,10 @@
     </div>
   </footer>
 
-  <!-- Password Modal -->
   <div class="modal-overlay" id="passModal">
     <div class="modal">
       <h3>دخول لوحة التحكم</h3>
-      <p>أدخل كلمة المرور للتحكم في الأسعار.</p>
+      <p>أدخل كلمة المرور للتحكم في الباقات والأسعار.</p>
       <div class="field" style="margin-bottom: 1rem;">
         <label for="adminPass">كلمة المرور</label>
         <input type="password" id="adminPass" placeholder="••••••" />
@@ -779,50 +786,158 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    // ========== DEFAULT PRICES (EGP) ==========
-    // Based on market averages ~2026. Owner can override via admin.
-    const DEFAULT_PRODUCTS = [
-      // PUBG UC
-      { id: "p60", type: "pubg", amount: 60, label: "60 UC", bonus: "", price: 65, oldPrice: 70 },
-      { id: "p350", type: "pubg", amount: 350, label: "350 UC", bonus: "300 + 25 بونص", price: 325, oldPrice: 350 },
-      { id: "p720", type: "pubg", amount: 720, label: "720 UC", bonus: "660 + 60 بونص", price: 650, oldPrice: 700 },
-      { id: "p2100", type: "pubg", amount: 2100, label: "2100 UC", bonus: "1800 + 300 بونص", price: 1620, oldPrice: 1750 },
-      { id: "p3850", type: "pubg", amount: 3850, label: "3850 UC", bonus: "3000 + 850 بونص", price: 3250, oldPrice: 3500 },
-      { id: "p8100", type: "pubg", amount: 8100, label: "8100 UC", bonus: "6000 + 2100 بونص", price: 6450, oldPrice: 7000 },
-      // TikTok Coins
-      { id: "t70", type: "tiktok", amount: 70, label: "70 عملة", bonus: "", price: 55, oldPrice: 60 },
-      { id: "t350", type: "tiktok", amount: 350, label: "350 عملة", bonus: "", price: 260, oldPrice: 280 },
-      { id: "t700", type: "tiktok", amount: 700, label: "700 عملة", bonus: "", price: 510, oldPrice: 550 },
-      { id: "t1400", type: "tiktok", amount: 1400, label: "1,400 عملة", bonus: "", price: 990, oldPrice: 1100 },
-      { id: "t3500", type: "tiktok", amount: 3500, label: "3,500 عملة", bonus: "", price: 2450, oldPrice: 2700 },
-      { id: "t7000", type: "tiktok", amount: 7000, label: "7,000 عملة", bonus: "", price: 4800, oldPrice: 5200 },
-    ];
+    // ============================================================
+    // 1) حط بيانات Firebase بتاعتك هنا
+    // ============================================================
+    // من Firebase Console → Project settings → Your apps → Web app
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyCqzHSHmd2uZPdu3Pq2f3JpliyVipYDmL4",
+      authDomain: "pubg-f8905.firebaseapp.com",
+      projectId: "pubg-f8905",
+      storageBucket: "pubg-f8905.firebasestorage.app",
+      messagingSenderId: "951173477997",
+      appId: "1:951173477997:web:d5a7ec4882efe961b5f164",
+      measurementId: "G-XY7C95FDND"
+    };
 
     const ADMIN_PASSWORD = "admin123"; // غيّرها لكلمة مرور قوية
-    const WHATSAPP_NUMBER = "201555239095"; // رقم واتساب Saif Store
+    const WHATSAPP_NUMBER = "201555239095";
+    const COLLECTION = "products"; // اسم المجموعة في Firestore
+
+    // ============================================================
+    // باقات افتراضية (تتسجل أول مرة لو السيرفر فاضي)
+    // ============================================================
+    const DEFAULT_PRODUCTS = [
+      { id: "p60", type: "pubg", amount: 60, bonusAmount: 0, label: "60 UC", bonus: "", price: 65, oldPrice: 70, visible: true, order: 1 },
+      { id: "p350", type: "pubg", amount: 350, bonusAmount: 25, label: "350 UC", bonus: "300 + 25 بونص", price: 325, oldPrice: 350, visible: true, order: 2 },
+      { id: "p720", type: "pubg", amount: 720, bonusAmount: 60, label: "720 UC", bonus: "660 + 60 بونص", price: 650, oldPrice: 700, visible: true, order: 3 },
+      { id: "p2100", type: "pubg", amount: 2100, bonusAmount: 300, label: "2100 UC", bonus: "1800 + 300 بونص", price: 1620, oldPrice: 1750, visible: true, order: 4 },
+      { id: "p3850", type: "pubg", amount: 3850, bonusAmount: 850, label: "3850 UC", bonus: "3000 + 850 بونص", price: 3250, oldPrice: 3500, visible: true, order: 5 },
+      { id: "p8100", type: "pubg", amount: 8100, bonusAmount: 2100, label: "8100 UC", bonus: "6000 + 2100 بونص", price: 6450, oldPrice: 7000, visible: true, order: 6 },
+      { id: "t70", type: "tiktok", amount: 70, bonusAmount: 0, label: "70 عملة", bonus: "", price: 55, oldPrice: 60, visible: true, order: 10 },
+      { id: "t350", type: "tiktok", amount: 350, bonusAmount: 0, label: "350 عملة", bonus: "", price: 260, oldPrice: 280, visible: true, order: 11 },
+      { id: "t700", type: "tiktok", amount: 700, bonusAmount: 0, label: "700 عملة", bonus: "", price: 510, oldPrice: 550, visible: true, order: 12 },
+      { id: "t1400", type: "tiktok", amount: 1400, bonusAmount: 0, label: "1,400 عملة", bonus: "", price: 990, oldPrice: 1100, visible: true, order: 13 },
+      { id: "t3500", type: "tiktok", amount: 3500, bonusAmount: 0, label: "3,500 عملة", bonus: "", price: 2450, oldPrice: 2700, visible: true, order: 14 },
+      { id: "t7000", type: "tiktok", amount: 7000, bonusAmount: 0, label: "7,000 عملة", bonus: "", price: 4800, oldPrice: 5200, visible: true, order: 15 },
+    ];
 
     let products = [];
     let currentTab = "pubg";
     let selectedProductId = null;
+    let db = null;
+    let firebaseReady = false;
+    let unsubscribe = null;
 
-    // Load from localStorage or defaults
-    function loadProducts() {
-      const saved = localStorage.getItem("store_prices_v1");
-      if (saved) {
-        try {
-          products = JSON.parse(saved);
-          return;
-        } catch (e) {}
+    // ---------- Firebase init ----------
+    function initFirebase() {
+      const statusEl = document.getElementById("adminStatus");
+      const isConfigured =
+        FIREBASE_CONFIG.apiKey &&
+        !FIREBASE_CONFIG.apiKey.includes("PASTE_") &&
+        FIREBASE_CONFIG.projectId &&
+        !FIREBASE_CONFIG.projectId.includes("PASTE_");
+
+      if (!isConfigured) {
+        firebaseReady = false;
+        if (statusEl) {
+          statusEl.className = "admin-status offline";
+          statusEl.textContent = "⚠️ Firebase مش متصل — حط بيانات المشروع في الكود";
+        }
+        // fallback محلي
+        products = JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
+        renderProducts();
+        return;
       }
-      products = JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
+
+      try {
+        firebase.initializeApp(FIREBASE_CONFIG);
+        db = firebase.firestore();
+        firebaseReady = true;
+        if (statusEl) {
+          statusEl.className = "admin-status online";
+          statusEl.textContent = "✅ متصل بـ Firebase — التعديلات تظهر لكل الزوار";
+        }
+        listenToProducts();
+      } catch (err) {
+        console.error(err);
+        firebaseReady = false;
+        if (statusEl) {
+          statusEl.className = "admin-status offline";
+          statusEl.textContent = "❌ فشل الاتصال: " + err.message;
+        }
+        products = JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
+        renderProducts();
+      }
     }
 
-    function saveProducts() {
-      localStorage.setItem("store_prices_v1", JSON.stringify(products));
+    function listenToProducts() {
+      if (!db) return;
+      if (unsubscribe) unsubscribe();
+
+      unsubscribe = db.collection(COLLECTION).orderBy("order").onSnapshot(
+        (snapshot) => {
+          if (snapshot.empty) {
+            // أول مرة: نزرع الباقات الافتراضية
+            seedDefaultsToServer().then(() => {});
+            return;
+          }
+          products = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+          renderProducts();
+          if (document.getElementById("adminPanel").classList.contains("visible")) {
+            renderAdminTable();
+          }
+        },
+        (err) => {
+          console.error(err);
+          showToast("خطأ في قراءة البيانات: " + err.message, true);
+        }
+      );
     }
 
+    async function seedDefaultsToServer() {
+      if (!db) return;
+      const batch = db.batch();
+      DEFAULT_PRODUCTS.forEach((p) => {
+        const ref = db.collection(COLLECTION).doc(p.id);
+        batch.set(ref, { ...p });
+      });
+      await batch.commit();
+      showToast("تم تحميل الباقات الافتراضية على السيرفر ✓");
+    }
+
+    async function saveProductsToServer(list) {
+      if (!db) {
+        showToast("Firebase مش متصل — التعديل محلي بس", true);
+        products = list;
+        renderProducts();
+        return;
+      }
+      const batch = db.batch();
+      list.forEach((p, idx) => {
+        const id = p.id || ("p" + Date.now() + idx);
+        p.id = id;
+        p.order = p.order != null ? p.order : idx + 1;
+        const ref = db.collection(COLLECTION).doc(id);
+        const { id: _omit, ...data } = p;
+        batch.set(ref, data, { merge: true });
+      });
+      await batch.commit();
+      showToast("تم الحفظ على السيرفر ✓ يظهر لكل الزوار");
+    }
+
+    async function deleteProductFromServer(id) {
+      if (!db) return;
+      await db.collection(COLLECTION).doc(id).delete();
+    }
+
+    // ---------- UI ----------
     function formatPrice(n) {
       return Number(n).toLocaleString("ar-EG");
+    }
+
+    function visibleProducts() {
+      return products.filter((p) => p.visible !== false);
     }
 
     function renderProducts() {
@@ -831,14 +946,21 @@
       pubgEl.innerHTML = "";
       tiktokEl.innerHTML = "";
 
-      products.forEach((p) => {
+      const list = visibleProducts();
+      if (!list.length) {
+        pubgEl.innerHTML = '<div class="loading-products">مفيش باقات ظاهرة حالياً</div>';
+        return;
+      }
+
+      list.forEach((p) => {
         const isPubg = p.type === "pubg";
         const card = document.createElement("article");
         card.className = `card ${p.type}`;
+        const bonusText = p.bonus || (p.bonusAmount ? `+ ${p.bonusAmount} بونص` : "");
         card.innerHTML = `
-          ${p.bonus ? `<span class="card-badge">أفضل قيمة</span>` : ""}
-          <div class="card-amount">${p.label} <small>${isPubg ? "شدة" : "تيك توك"}</small></div>
-          ${p.bonus ? `<div class="card-bonus">+ ${p.bonus}</div>` : `<div class="card-bonus" style="visibility:hidden">—</div>`}
+          ${bonusText ? `<span class="card-badge">أفضل قيمة</span>` : ""}
+          <div class="card-amount">${p.label || p.amount} <small>${isPubg ? "شدة" : "تيك توك"}</small></div>
+          ${bonusText ? `<div class="card-bonus">${bonusText}</div>` : `<div class="card-bonus" style="visibility:hidden">—</div>`}
           <div>
             <span class="card-price">${formatPrice(p.price)} <span class="currency">ج.م</span></span>
             ${p.oldPrice && p.oldPrice > p.price ? `<span class="card-old">${formatPrice(p.oldPrice)}</span>` : ""}
@@ -864,11 +986,11 @@
 
     function updateOrderSelect() {
       const select = document.getElementById("productSelect");
-      const filtered = products.filter((p) => p.type === currentTab);
+      const filtered = visibleProducts().filter((p) => p.type === currentTab);
       select.innerHTML = filtered
         .map(
           (p) =>
-            `<option value="${p.id}" ${p.id === selectedProductId ? "selected" : ""}>${p.label} — ${formatPrice(p.price)} ج.م</option>`
+            `<option value="${p.id}" ${p.id === selectedProductId ? "selected" : ""}>${p.label || p.amount} — ${formatPrice(p.price)} ج.م</option>`
         )
         .join("");
 
@@ -876,7 +998,6 @@
         selectedProductId = filtered[0]?.id || null;
         if (selectedProductId) select.value = selectedProductId;
       }
-
       updateTotal();
     }
 
@@ -903,7 +1024,7 @@
 
     document.getElementById("productSelect").addEventListener("change", updateTotal);
 
-    // Submit order via WhatsApp
+    // Order → WhatsApp
     document.getElementById("submitOrder").addEventListener("click", () => {
       const p = products.find((x) => x.id === selectedProductId);
       const playerId = document.getElementById("playerId").value.trim();
@@ -911,26 +1032,29 @@
       const phone = document.getElementById("customerPhone").value.trim();
 
       if (!p) {
-        showToast("اختر باقة أولاً");
+        showToast("اختر باقة أولاً", true);
         return;
       }
       if (!playerId) {
-        showToast("اكتب الآيدي أو اسم المستخدم");
+        showToast("اكتب الآيدي أو اسم المستخدم", true);
         document.getElementById("playerId").focus();
         return;
       }
       if (!phone) {
-        showToast("اكتب رقم الواتساب للتواصل");
+        showToast("اكتب رقم الواتساب للتواصل", true);
         document.getElementById("customerPhone").focus();
         return;
       }
 
       const typeLabel = p.type === "pubg" ? "شدات ببجي" : "عملات تيك توك";
+      const bonusLine = p.bonus || (p.bonusAmount ? `بونص: ${p.bonusAmount}` : null);
       const msg = [
         `طلب جديد من Saif Store 🔥`,
         ``,
         `النوع: ${typeLabel}`,
-        `الباقة: ${p.label}${p.bonus ? ` (${p.bonus})` : ""}`,
+        `الباقة: ${p.label || p.amount}`,
+        bonusLine,
+        `الكمية: ${p.amount}${p.bonusAmount ? ` (+${p.bonusAmount} بونص)` : ""}`,
         `السعر: ${formatPrice(p.price)} ج.م`,
         `الآيدي / اليوزر: ${playerId}`,
         name ? `الاسم: ${name}` : null,
@@ -939,12 +1063,11 @@
         .filter(Boolean)
         .join("\n");
 
-      const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
-      window.open(url, "_blank");
+      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, "_blank");
       showToast("تم فتح واتساب لإرسال الطلب");
     });
 
-    // Admin
+    // ---------- Admin ----------
     const adminPanel = document.getElementById("adminPanel");
     const passModal = document.getElementById("passModal");
 
@@ -964,15 +1087,14 @@
     });
 
     document.getElementById("confirmPass").addEventListener("click", () => {
-      const pass = document.getElementById("adminPass").value;
-      if (pass === ADMIN_PASSWORD) {
+      if (document.getElementById("adminPass").value === ADMIN_PASSWORD) {
         passModal.classList.remove("open");
         adminPanel.classList.add("visible");
         document.getElementById("adminToggle").classList.add("active");
         renderAdminTable();
         showToast("مرحباً بك في لوحة التحكم");
       } else {
-        showToast("كلمة المرور غلط");
+        showToast("كلمة المرور غلط", true);
       }
     });
 
@@ -982,42 +1104,133 @@
 
     function renderAdminTable() {
       const tbody = document.querySelector("#adminTable tbody");
-      tbody.innerHTML = products
+      const sorted = [...products].sort((a, b) => (a.order || 0) - (b.order || 0));
+      tbody.innerHTML = sorted
         .map(
           (p) => `
         <tr data-id="${p.id}">
-          <td>${p.type === "pubg" ? "ببجي" : "تيك توك"}</td>
-          <td>${p.label}</td>
-          <td><input type="number" class="price-input" data-field="price" value="${p.price}" min="0" step="1" /></td>
-          <td><input type="number" class="old-input" data-field="oldPrice" value="${p.oldPrice || ""}" min="0" step="1" placeholder="—" /></td>
+          <td>
+            <select class="type-input">
+              <option value="pubg" ${p.type === "pubg" ? "selected" : ""}>ببجي</option>
+              <option value="tiktok" ${p.type === "tiktok" ? "selected" : ""}>تيك توك</option>
+            </select>
+          </td>
+          <td><input type="number" class="amount-input w-sm" value="${p.amount || 0}" min="0" /></td>
+          <td><input type="number" class="bonus-amount-input w-sm" value="${p.bonusAmount || 0}" min="0" /></td>
+          <td><input type="text" class="label-input" value="${(p.label || "").replace(/"/g, "&quot;")}" /></td>
+          <td><input type="number" class="price-input w-md" value="${p.price || 0}" min="0" step="1" /></td>
+          <td><input type="number" class="old-input w-md" value="${p.oldPrice || ""}" min="0" step="1" placeholder="—" /></td>
+          <td style="text-align:center">
+            <input type="checkbox" class="visible-input" ${p.visible !== false ? "checked" : ""} />
+          </td>
+          <td>
+            <button type="button" class="btn btn-danger btn-del" style="padding:0.35rem 0.6rem;font-size:0.8rem">حذف</button>
+          </td>
         </tr>
       `
         )
         .join("");
+
+      tbody.querySelectorAll(".btn-del").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const row = btn.closest("tr");
+          const id = row.dataset.id;
+          if (!confirm("تحذف الباقة دي؟")) return;
+          products = products.filter((x) => x.id !== id);
+          row.remove();
+          if (firebaseReady) {
+            await deleteProductFromServer(id);
+            showToast("تم الحذف من السيرفر");
+          } else {
+            renderProducts();
+            showToast("تم الحذف محليًا");
+          }
+        });
+      });
     }
 
-    document.getElementById("savePrices").addEventListener("click", () => {
-      document.querySelectorAll("#adminTable tbody tr").forEach((row) => {
+    function collectAdminRows() {
+      const rows = [];
+      document.querySelectorAll("#adminTable tbody tr").forEach((row, idx) => {
         const id = row.dataset.id;
-        const p = products.find((x) => x.id === id);
-        if (!p) return;
-        const priceInput = row.querySelector(".price-input");
-        const oldInput = row.querySelector(".old-input");
-        p.price = Number(priceInput.value) || 0;
-        p.oldPrice = oldInput.value ? Number(oldInput.value) : null;
+        const amount = Number(row.querySelector(".amount-input").value) || 0;
+        const bonusAmount = Number(row.querySelector(".bonus-amount-input").value) || 0;
+        const label = row.querySelector(".label-input").value.trim() || String(amount);
+        const type = row.querySelector(".type-input").value;
+        const price = Number(row.querySelector(".price-input").value) || 0;
+        const oldVal = row.querySelector(".old-input").value;
+        const oldPrice = oldVal === "" ? null : Number(oldVal);
+        const visible = row.querySelector(".visible-input").checked;
+
+        // بناء نص البونص تلقائي
+        let bonus = "";
+        if (bonusAmount > 0 && amount > bonusAmount) {
+          const base = amount - bonusAmount;
+          bonus = `${base} + ${bonusAmount} بونص`;
+        } else if (bonusAmount > 0) {
+          bonus = `+ ${bonusAmount} بونص`;
+        }
+
+        rows.push({
+          id,
+          type,
+          amount,
+          bonusAmount,
+          label,
+          bonus,
+          price,
+          oldPrice,
+          visible,
+          order: idx + 1,
+        });
       });
-      saveProducts();
-      renderProducts();
-      showToast("تم حفظ الأسعار بنجاح ✓");
+      return rows;
+    }
+
+    document.getElementById("savePrices").addEventListener("click", async () => {
+      const list = collectAdminRows();
+      products = list;
+      try {
+        await saveProductsToServer(list);
+        renderProducts();
+        renderAdminTable();
+      } catch (err) {
+        console.error(err);
+        showToast("فشل الحفظ: " + err.message, true);
+      }
     });
 
-    document.getElementById("resetPrices").addEventListener("click", () => {
-      if (confirm("هترجع كل الأسعار للقيم الافتراضية؟")) {
-        products = JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
-        saveProducts();
-        renderAdminTable();
-        renderProducts();
-        showToast("تم استعادة الأسعار الافتراضية");
+    document.getElementById("addProduct").addEventListener("click", () => {
+      const newId = "p" + Date.now();
+      products.push({
+        id: newId,
+        type: currentTab === "tiktok" ? "tiktok" : "pubg",
+        amount: 100,
+        bonusAmount: 0,
+        label: "باقة جديدة",
+        bonus: "",
+        price: 100,
+        oldPrice: null,
+        visible: true,
+        order: products.length + 1,
+      });
+      renderAdminTable();
+      showToast("أضف البيانات واضغط حفظ");
+    });
+
+    document.getElementById("seedDefaults").addEventListener("click", async () => {
+      if (!confirm("هتحمل الباقات الافتراضية على السيرفر (ممكن تستبدل الموجود)؟")) return;
+      try {
+        if (firebaseReady) {
+          await seedDefaultsToServer();
+        } else {
+          products = JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
+          renderProducts();
+          renderAdminTable();
+          showToast("تم التحميل محليًا");
+        }
+      } catch (err) {
+        showToast("خطأ: " + err.message, true);
       }
     });
 
@@ -1026,16 +1239,16 @@
       document.getElementById("adminToggle").classList.remove("active");
     });
 
-    function showToast(msg) {
+    function showToast(msg, isError) {
       const t = document.getElementById("toast");
       t.textContent = msg;
+      t.classList.toggle("error", !!isError);
       t.classList.add("show");
-      setTimeout(() => t.classList.remove("show"), 2500);
+      setTimeout(() => t.classList.remove("show"), 2800);
     }
 
     // Init
-    loadProducts();
-    renderProducts();
+    initFirebase();
   </script>
 </body>
 </html>
