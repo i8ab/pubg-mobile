@@ -346,6 +346,21 @@
       color: var(--tiktok);
     }
 
+    .card-badge.featured-badge {
+      background: linear-gradient(135deg, #f59e0b, #fbbf24);
+      color: #1a1000;
+    }
+
+    .card.featured {
+      border-color: rgba(245, 158, 11, 0.45);
+      box-shadow: 0 0 24px rgba(245, 158, 11, 0.15);
+    }
+
+    .card.featured::before {
+      opacity: 1;
+      background: linear-gradient(90deg, transparent, #f59e0b, transparent);
+    }
+
     .card-amount {
       font-family: "Orbitron", sans-serif;
       font-size: 1.55rem;
@@ -683,7 +698,7 @@
       <!-- Admin Panel -->
       <section class="admin-panel" id="adminPanel">
         <h2>🔧 لوحة التحكم — Saif Store</h2>
-        <p class="admin-hint">عدّل الكمية، البونص، الاسم، والسعر. التغييرات تتحفظ على السيرفر وتظهر لكل الزوار فورًا.</p>
+        <p class="admin-hint">عدّل الكمية والبونص والسعر. الاسم بيتكتب لوحده من الكمية. «إظهار» = تظهر للعملاء · «مميزة» = حزم الإظهار (شارة + أولوية أعلى).</p>
         <div id="adminStatus" class="admin-status offline">⏳ جاري الاتصال بـ Firebase...</div>
 
         <div class="admin-table-wrap">
@@ -693,10 +708,10 @@
                 <th>النوع</th>
                 <th>الكمية</th>
                 <th>البونص</th>
-                <th>الاسم الظاهر</th>
                 <th>السعر (ج.م)</th>
                 <th>سعر قديم</th>
                 <th>إظهار</th>
+                <th>مميزة</th>
                 <th></th>
               </tr>
             </thead>
@@ -810,13 +825,13 @@
     const DEFAULT_PRODUCTS = [
       { id: "p60", type: "pubg", amount: 60, bonusAmount: 0, label: "60 UC", bonus: "", price: 65, oldPrice: 70, visible: true, order: 1 },
       { id: "p350", type: "pubg", amount: 350, bonusAmount: 25, label: "350 UC", bonus: "300 + 25 بونص", price: 325, oldPrice: 350, visible: true, order: 2 },
-      { id: "p720", type: "pubg", amount: 720, bonusAmount: 60, label: "720 UC", bonus: "660 + 60 بونص", price: 650, oldPrice: 700, visible: true, order: 3 },
-      { id: "p2100", type: "pubg", amount: 2100, bonusAmount: 300, label: "2100 UC", bonus: "1800 + 300 بونص", price: 1620, oldPrice: 1750, visible: true, order: 4 },
+      { id: "p720", type: "pubg", amount: 720, bonusAmount: 60, label: "720 UC", bonus: "660 + 60 بونص", price: 650, oldPrice: 700, visible: true, featured: true, order: 3 },
+      { id: "p2100", type: "pubg", amount: 2100, bonusAmount: 300, label: "2100 UC", bonus: "1800 + 300 بونص", price: 1620, oldPrice: 1750, visible: true, featured: true, order: 4 },
       { id: "p3850", type: "pubg", amount: 3850, bonusAmount: 850, label: "3850 UC", bonus: "3000 + 850 بونص", price: 3250, oldPrice: 3500, visible: true, order: 5 },
       { id: "p8100", type: "pubg", amount: 8100, bonusAmount: 2100, label: "8100 UC", bonus: "6000 + 2100 بونص", price: 6450, oldPrice: 7000, visible: true, order: 6 },
       { id: "t70", type: "tiktok", amount: 70, bonusAmount: 0, label: "70 عملة", bonus: "", price: 55, oldPrice: 60, visible: true, order: 10 },
       { id: "t350", type: "tiktok", amount: 350, bonusAmount: 0, label: "350 عملة", bonus: "", price: 260, oldPrice: 280, visible: true, order: 11 },
-      { id: "t700", type: "tiktok", amount: 700, bonusAmount: 0, label: "700 عملة", bonus: "", price: 510, oldPrice: 550, visible: true, order: 12 },
+      { id: "t700", type: "tiktok", amount: 700, bonusAmount: 0, label: "700 عملة", bonus: "", price: 510, oldPrice: 550, visible: true, featured: true, order: 12 },
       { id: "t1400", type: "tiktok", amount: 1400, bonusAmount: 0, label: "1,400 عملة", bonus: "", price: 990, oldPrice: 1100, visible: true, order: 13 },
       { id: "t3500", type: "tiktok", amount: 3500, bonusAmount: 0, label: "3,500 عملة", bonus: "", price: 2450, oldPrice: 2700, visible: true, order: 14 },
       { id: "t7000", type: "tiktok", amount: 7000, bonusAmount: 0, label: "7,000 عملة", bonus: "", price: 4800, oldPrice: 5200, visible: true, order: 15 },
@@ -946,7 +961,11 @@
       pubgEl.innerHTML = "";
       tiktokEl.innerHTML = "";
 
-      const list = visibleProducts();
+      const list = visibleProducts().sort((a, b) => {
+        // حزم الإظهار (المميزة) أولاً
+        if (!!b.featured !== !!a.featured) return b.featured ? 1 : -1;
+        return (a.order || 0) - (b.order || 0);
+      });
       if (!list.length) {
         pubgEl.innerHTML = '<div class="loading-products">مفيش باقات ظاهرة حالياً</div>';
         return;
@@ -955,11 +974,15 @@
       list.forEach((p) => {
         const isPubg = p.type === "pubg";
         const card = document.createElement("article");
-        card.className = `card ${p.type}`;
-        const bonusText = p.bonus || (p.bonusAmount ? `+ ${p.bonusAmount} بونص` : "");
+        card.className = `card ${p.type}${p.featured ? " featured" : ""}`;
+        const displayLabel = p.label || buildLabel(p.type, p.amount);
+        const bonusText = p.bonus || buildBonusText(p.amount, p.bonusAmount);
+        let badge = "";
+        if (p.featured) badge = `<span class="card-badge featured-badge">⭐ مميزة</span>`;
+        else if (bonusText) badge = `<span class="card-badge">أفضل قيمة</span>`;
         card.innerHTML = `
-          ${bonusText ? `<span class="card-badge">أفضل قيمة</span>` : ""}
-          <div class="card-amount">${p.label || p.amount} <small>${isPubg ? "شدة" : "تيك توك"}</small></div>
+          ${badge}
+          <div class="card-amount">${displayLabel} <small>${isPubg ? "شدة" : "تيك توك"}</small></div>
           ${bonusText ? `<div class="card-bonus">${bonusText}</div>` : `<div class="card-bonus" style="visibility:hidden">—</div>`}
           <div>
             <span class="card-price">${formatPrice(p.price)} <span class="currency">ج.م</span></span>
@@ -990,7 +1013,7 @@
       select.innerHTML = filtered
         .map(
           (p) =>
-            `<option value="${p.id}" ${p.id === selectedProductId ? "selected" : ""}>${p.label || p.amount} — ${formatPrice(p.price)} ج.م</option>`
+            `<option value="${p.id}" ${p.id === selectedProductId ? "selected" : ""}>${p.label || buildLabel(p.type, p.amount)} — ${formatPrice(p.price)} ج.م</option>`
         )
         .join("");
 
@@ -1102,6 +1125,22 @@
       if (e.key === "Enter") document.getElementById("confirmPass").click();
     });
 
+    function buildLabel(type, amount) {
+      if (type === "tiktok") return `${Number(amount).toLocaleString("en-US")} عملة`;
+      return `${Number(amount).toLocaleString("en-US")} UC`;
+    }
+
+    function buildBonusText(amount, bonusAmount) {
+      const b = Number(bonusAmount) || 0;
+      const a = Number(amount) || 0;
+      if (b <= 0) return "";
+      if (a > b) {
+        const base = a - b;
+        return `${base.toLocaleString("en-US")} + ${b.toLocaleString("en-US")} بونص`;
+      }
+      return `+ ${b.toLocaleString("en-US")} بونص`;
+    }
+
     function renderAdminTable() {
       const tbody = document.querySelector("#adminTable tbody");
       const sorted = [...products].sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -1117,11 +1156,13 @@
           </td>
           <td><input type="number" class="amount-input w-sm" value="${p.amount || 0}" min="0" /></td>
           <td><input type="number" class="bonus-amount-input w-sm" value="${p.bonusAmount || 0}" min="0" /></td>
-          <td><input type="text" class="label-input" value="${(p.label || "").replace(/"/g, "&quot;")}" /></td>
           <td><input type="number" class="price-input w-md" value="${p.price || 0}" min="0" step="1" /></td>
           <td><input type="number" class="old-input w-md" value="${p.oldPrice || ""}" min="0" step="1" placeholder="—" /></td>
           <td style="text-align:center">
-            <input type="checkbox" class="visible-input" ${p.visible !== false ? "checked" : ""} />
+            <input type="checkbox" class="visible-input" ${p.visible !== false ? "checked" : ""} title="إظهار الباقة للعملاء" />
+          </td>
+          <td style="text-align:center">
+            <input type="checkbox" class="featured-input" ${p.featured ? "checked" : ""} title="حزم الإظهار — باقة مميزة" />
           </td>
           <td>
             <button type="button" class="btn btn-danger btn-del" style="padding:0.35rem 0.6rem;font-size:0.8rem">حذف</button>
@@ -1155,21 +1196,16 @@
         const id = row.dataset.id;
         const amount = Number(row.querySelector(".amount-input").value) || 0;
         const bonusAmount = Number(row.querySelector(".bonus-amount-input").value) || 0;
-        const label = row.querySelector(".label-input").value.trim() || String(amount);
         const type = row.querySelector(".type-input").value;
         const price = Number(row.querySelector(".price-input").value) || 0;
         const oldVal = row.querySelector(".old-input").value;
         const oldPrice = oldVal === "" ? null : Number(oldVal);
         const visible = row.querySelector(".visible-input").checked;
+        const featured = row.querySelector(".featured-input").checked;
 
-        // بناء نص البونص تلقائي
-        let bonus = "";
-        if (bonusAmount > 0 && amount > bonusAmount) {
-          const base = amount - bonusAmount;
-          bonus = `${base} + ${bonusAmount} بونص`;
-        } else if (bonusAmount > 0) {
-          bonus = `+ ${bonusAmount} بونص`;
-        }
+        // الاسم والبونص تلقائي من الكمية
+        const label = buildLabel(type, amount);
+        const bonus = buildBonusText(amount, bonusAmount);
 
         rows.push({
           id,
@@ -1181,6 +1217,7 @@
           price,
           oldPrice,
           visible,
+          featured,
           order: idx + 1,
         });
       });
@@ -1202,20 +1239,23 @@
 
     document.getElementById("addProduct").addEventListener("click", () => {
       const newId = "p" + Date.now();
+      const type = currentTab === "tiktok" ? "tiktok" : "pubg";
+      const amount = 100;
       products.push({
         id: newId,
-        type: currentTab === "tiktok" ? "tiktok" : "pubg",
-        amount: 100,
+        type,
+        amount,
         bonusAmount: 0,
-        label: "باقة جديدة",
+        label: buildLabel(type, amount),
         bonus: "",
         price: 100,
         oldPrice: null,
         visible: true,
+        featured: false,
         order: products.length + 1,
       });
       renderAdminTable();
-      showToast("أضف البيانات واضغط حفظ");
+      showToast("عدّل الكمية والسعر ثم احفظ");
     });
 
     document.getElementById("seedDefaults").addEventListener("click", async () => {
