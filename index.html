@@ -24,6 +24,8 @@
       --tiktok: #fe2c55;
       --tiktok-cyan: #25f4ee;
       --tiktok-glow: rgba(254, 44, 85, 0.4);
+      --pass: #f59e0b;
+      --pass-glow: rgba(245, 158, 11, 0.4);
       --success: #22c55e;
       --danger: #ef4444;
       --radius: 16px;
@@ -157,6 +159,12 @@
       box-shadow: 0 4px 20px var(--tiktok-glow);
     }
 
+    .btn-pass {
+      background: linear-gradient(135deg, var(--pass), #fbbf24);
+      color: #1a1000;
+      box-shadow: 0 4px 20px var(--pass-glow);
+    }
+
     .btn-admin {
       background: var(--bg-elevated);
       color: var(--text-muted);
@@ -277,6 +285,13 @@
       box-shadow: 0 0 20px var(--tiktok-glow);
     }
 
+    .tab.active-pass {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: var(--pass);
+      color: var(--pass);
+      box-shadow: 0 0 20px var(--pass-glow);
+    }
+
     .section-title {
       font-size: 1.35rem;
       font-weight: 800;
@@ -328,6 +343,7 @@
 
     .card.pubg { --accent: var(--pubg); }
     .card.tiktok { --accent: var(--tiktok); }
+    .card.pass { --accent: var(--pass); }
 
     .card-badge {
       position: absolute;
@@ -344,6 +360,11 @@
     .card.tiktok .card-badge {
       background: rgba(254, 44, 85, 0.2);
       color: var(--tiktok);
+    }
+
+    .card.pass .card-badge:not(.featured-badge) {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--pass);
     }
 
     .card-badge.featured-badge {
@@ -730,6 +751,7 @@
       <!-- Tabs -->
       <div class="tabs">
         <button class="tab active-pubg" data-tab="pubg" type="button">🪖 شدات ببجي</button>
+        <button class="tab" data-tab="pass" type="button">👑 رويال باس / حزم الإصدار</button>
         <button class="tab" data-tab="tiktok" type="button">🎵 عملات تيك توك</button>
       </div>
 
@@ -738,6 +760,11 @@
         <div class="products" id="pubgProducts">
           <div class="loading-products">جاري تحميل الباقات...</div>
         </div>
+      </section>
+
+      <section id="passSection" class="hidden">
+        <h2 class="section-title">حزم الإصدار · رويال باس · شراء أول</h2>
+        <div class="products" id="passProducts"></div>
       </section>
 
       <section id="tiktokSection" class="hidden">
@@ -815,7 +842,7 @@
       measurementId: "G-XY7C95FDND"
     };
 
-    const ADMIN_PASSWORD = "7amy2009513"; // غيّرها لكلمة مرور قوية
+    const ADMIN_PASSWORD = "admin123"; // غيّرها لكلمة مرور قوية
     const WHATSAPP_NUMBER = "201555239095";
     const COLLECTION = "products"; // اسم المجموعة في Firestore
 
@@ -823,11 +850,11 @@
     // باقات افتراضية (تتسجل أول مرة لو السيرفر فاضي)
     // ============================================================
     const DEFAULT_PRODUCTS = [
-      // ===== حزم خاصة (شراء أول + رويال باس) — من table.csv =====
-      { id: "first_purchase", type: "pubg", amount: 90, bonusAmount: 0, label: "حزمة الشراء الأول", bonus: "90 UC + 100 AG · مرة واحدة لكل حساب", price: 45, oldPrice: 55, visible: true, featured: true, order: 0 },
-      { id: "elite_50", type: "pubg", amount: 50, bonusAmount: 0, label: "Elite Pass (1-50)", bonus: "رويال باس نصفي LV1-50", price: 240, oldPrice: 270, visible: true, featured: true, order: 0.1 },
-      { id: "elite_100", type: "pubg", amount: 100, bonusAmount: 0, label: "Elite Pass (1-100)", bonus: "رويال باس كامل LV1-100", price: 480, oldPrice: 540, visible: true, featured: true, order: 0.2 },
-      { id: "elite_plus", type: "pubg", amount: 100, bonusAmount: 0, label: "Elite Pass Plus (1-100)", bonus: "رويال باس بلس LV1-100", price: 1200, oldPrice: 1350, visible: true, featured: true, order: 0.3 },
+      // ===== حزم الإصدار / رويال باس / شراء أول — قسم مستقل =====
+      { id: "first_purchase", type: "pass", amount: 90, bonusAmount: 0, label: "حزمة الشراء الأول", bonus: "90 UC + 100 AG · مرة واحدة لكل حساب", price: 45, oldPrice: 55, visible: true, featured: true, order: 0 },
+      { id: "elite_50", type: "pass", amount: 50, bonusAmount: 0, label: "Elite Pass (1-50)", bonus: "رويال باس نصفي LV1-50", price: 240, oldPrice: 270, visible: true, featured: true, order: 0.1 },
+      { id: "elite_100", type: "pass", amount: 100, bonusAmount: 0, label: "Elite Pass (1-100)", bonus: "رويال باس كامل LV1-100", price: 480, oldPrice: 540, visible: true, featured: true, order: 0.2 },
+      { id: "elite_plus", type: "pass", amount: 100, bonusAmount: 0, label: "Elite Pass Plus (1-100)", bonus: "رويال باس بلس LV1-100", price: 1200, oldPrice: 1350, visible: true, featured: true, order: 0.3 },
       // ===== شدات ببجي (مطابقة لحزم Midasbuy الرسمية) =====
       { id: "p30", type: "pubg", amount: 30, bonusAmount: 0, label: "30 UC", bonus: "", price: 35, oldPrice: 40, visible: true, order: 1 },
       { id: "p60", type: "pubg", amount: 60, bonusAmount: 0, label: "60 UC", bonus: "", price: 65, oldPrice: 70, visible: true, order: 2 },
@@ -971,8 +998,10 @@
 
     function renderProducts() {
       const pubgEl = document.getElementById("pubgProducts");
+      const passEl = document.getElementById("passProducts");
       const tiktokEl = document.getElementById("tiktokProducts");
       pubgEl.innerHTML = "";
+      passEl.innerHTML = "";
       tiktokEl.innerHTML = "";
 
       const list = visibleProducts().sort((a, b) => {
@@ -985,8 +1014,14 @@
         return;
       }
 
+      const typeMeta = {
+        pubg: { small: "شدة", btn: "btn-primary", el: pubgEl },
+        pass: { small: "إصدار", btn: "btn-pass", el: passEl },
+        tiktok: { small: "تيك توك", btn: "btn-tiktok", el: tiktokEl },
+      };
+
       list.forEach((p) => {
-        const isPubg = p.type === "pubg";
+        const meta = typeMeta[p.type] || typeMeta.pubg;
         const card = document.createElement("article");
         card.className = `card ${p.type}${p.featured ? " featured" : ""}`;
         const displayLabel = p.label || buildLabel(p.type, p.amount);
@@ -996,17 +1031,17 @@
         else if (bonusText) badge = `<span class="card-badge">أفضل قيمة</span>`;
         card.innerHTML = `
           ${badge}
-          <div class="card-amount">${displayLabel} <small>${isPubg ? "شدة" : "تيك توك"}</small></div>
+          <div class="card-amount">${displayLabel} <small>${meta.small}</small></div>
           ${bonusText ? `<div class="card-bonus">${bonusText}</div>` : `<div class="card-bonus" style="visibility:hidden">—</div>`}
           <div>
             <span class="card-price">${formatPrice(p.price)} <span class="currency">ج.م</span></span>
             ${p.oldPrice && p.oldPrice > p.price ? `<span class="card-old">${formatPrice(p.oldPrice)}</span>` : ""}
           </div>
           <div class="card-actions">
-            <button class="btn ${isPubg ? "btn-primary" : "btn-tiktok"} select-btn" data-id="${p.id}" type="button">اختيار</button>
+            <button class="btn ${meta.btn} select-btn" data-id="${p.id}" type="button">اختيار</button>
           </div>
         `;
-        (isPubg ? pubgEl : tiktokEl).appendChild(card);
+        meta.el.appendChild(card);
       });
 
       document.querySelectorAll(".select-btn").forEach((btn) => {
@@ -1050,10 +1085,14 @@
       tab.addEventListener("click", () => {
         currentTab = tab.dataset.tab;
         document.querySelectorAll(".tab").forEach((t) => {
-          t.classList.remove("active-pubg", "active-tiktok");
+          t.classList.remove("active-pubg", "active-tiktok", "active-pass");
         });
-        tab.classList.add(currentTab === "pubg" ? "active-pubg" : "active-tiktok");
+        const activeClass =
+          currentTab === "pubg" ? "active-pubg" :
+          currentTab === "pass" ? "active-pass" : "active-tiktok";
+        tab.classList.add(activeClass);
         document.getElementById("pubgSection").classList.toggle("hidden", currentTab !== "pubg");
+        document.getElementById("passSection").classList.toggle("hidden", currentTab !== "pass");
         document.getElementById("tiktokSection").classList.toggle("hidden", currentTab !== "tiktok");
         updateOrderSelect();
       });
@@ -1083,15 +1122,21 @@
         return;
       }
 
-      const typeLabel = p.type === "pubg" ? "شدات ببجي" : "عملات تيك توك";
+      const typeLabel =
+        p.type === "pubg" ? "شدات ببجي" :
+        p.type === "pass" ? "رويال باس / حزم الإصدار" :
+        "عملات تيك توك";
       const bonusLine = p.bonus || (p.bonusAmount ? `بونص: ${p.bonusAmount}` : null);
+      const qtyLine = p.type === "pass"
+        ? null
+        : `الكمية: ${p.amount}${p.bonusAmount ? ` (+${p.bonusAmount} بونص)` : ""}`;
       const msg = [
         `طلب جديد من Saif Store 🔥`,
         ``,
         `النوع: ${typeLabel}`,
         `الباقة: ${p.label || p.amount}`,
         bonusLine,
-        `الكمية: ${p.amount}${p.bonusAmount ? ` (+${p.bonusAmount} بونص)` : ""}`,
+        qtyLine,
         `السعر: ${formatPrice(p.price)} ج.م`,
         `الآيدي / اليوزر: ${playerId}`,
         name ? `الاسم: ${name}` : null,
@@ -1141,6 +1186,7 @@
 
     function buildLabel(type, amount) {
       if (type === "tiktok") return `${Number(amount).toLocaleString("en-US")} عملة`;
+      if (type === "pass") return `حزمة إصدار ${Number(amount).toLocaleString("en-US")}`;
       return `${Number(amount).toLocaleString("en-US")} UC`;
     }
 
@@ -1165,6 +1211,7 @@
           <td>
             <select class="type-input">
               <option value="pubg" ${p.type === "pubg" ? "selected" : ""}>ببجي</option>
+              <option value="pass" ${p.type === "pass" ? "selected" : ""}>رويال باس</option>
               <option value="tiktok" ${p.type === "tiktok" ? "selected" : ""}>تيك توك</option>
             </select>
           </td>
@@ -1253,8 +1300,10 @@
 
     document.getElementById("addProduct").addEventListener("click", () => {
       const newId = "p" + Date.now();
-      const type = currentTab === "tiktok" ? "tiktok" : "pubg";
-      const amount = 100;
+      const type =
+        currentTab === "tiktok" ? "tiktok" :
+        currentTab === "pass" ? "pass" : "pubg";
+      const amount = type === "pass" ? 50 : 100;
       products.push({
         id: newId,
         type,
